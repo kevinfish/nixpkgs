@@ -1,0 +1,38 @@
+From b8e17cbe73ae4c71b93ff5687ba86db1d0c1f5bd Mon Sep 17 00:00:00 2001
+From: Steve Schnepp <steve.schnepp@pwkf.org>
+Date: Thu, 17 Oct 2013 11:52:10 +0200
+Subject: [PATCH] node: untaint the service-dir args
+
+---
+ node/sbin/munin-node | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/node/sbin/munin-node b/node/sbin/munin-node
+index 0a93450..909c8c4 100755
+--- a/node/sbin/munin-node
++++ b/node/sbin/munin-node
+@@ -99,9 +99,10 @@ sub parse_args
+ {
+     my @ORIG_ARGV  = @ARGV;
+ 
++    my $servicedir_cmdline;
+     print_usage_and_exit() unless GetOptions(
+         "config=s"     => \$conffile,
+-        "servicedir=s" => \$servicedir,
++        "servicedir=s" => \$servicedir_cmdline,
+         "debug!"       => \$DEBUG,
+         "pidebug!"     => \$PIDEBUG,
+         "paranoia!"    => \$paranoia,
+@@ -109,6 +110,9 @@ sub parse_args
+         "help"         => \&print_usage_and_exit,
+     );
+ 
++    # We untaint the args brutally, since the sysadm should know what he does
++    $servicedir = $1 if defined $servicedir_cmdline && $servicedir_cmdline =~ m/(.*)/;
++
+     # Reset ARGV (for HUPing)
+     @ARGV = @ORIG_ARGV;
+ 
+-- 
+1.8.4
+
