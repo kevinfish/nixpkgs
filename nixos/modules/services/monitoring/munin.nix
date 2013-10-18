@@ -111,6 +111,21 @@ in
           HTML output is in <filename>/var/www/munin/</filename>, configure your
           favourite webserver to serve static files.
         '';
+        example = literalExample ''
+          services = {
+             munin-node.enable = true;
+             munin-cron = {
+               enable = true;
+               hosts = '''
+                 [''${config.networking.hostName}]
+                 address localhost
+               ''';
+               extraGlobalConfig = '''
+                 contact.email.command mail -s "Munin notification for ''${var:host}" someone@example.com
+               ''';
+             };
+          };
+        '';
       };
       
       extraGlobalConfig = mkOption {
